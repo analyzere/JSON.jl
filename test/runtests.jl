@@ -244,7 +244,7 @@ end
 
 # Check NaNs are printed correctly
 @test sprint(JSON.print, [NaN]) == "[null]"
-@test sprint(JSON.print, [Inf]) == "[null]"
+@test sprint(JSON.print, [Inf]) == "[Infinity]"
 
 # Check printing of more exotic objects
 if VERSION < v"0.5.0-dev+2396"
@@ -280,6 +280,10 @@ end
 
 # Test for Issue #99
 @test_throws ErrorException JSON.parse("[\"🍕\"_\"🍕\"")
+
+# Support Infinity/-Infinity
+@test JSON.parse("Infinity") == Float64(Inf)
+@test JSON.json(1/0) == "Infinity"
 
 # Check that printing to the default STDOUT doesn't fail
 JSON.print(["JSON.jl tests pass!"],1)
