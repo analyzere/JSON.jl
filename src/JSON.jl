@@ -99,8 +99,14 @@ function _print(io::IO, state::State, s::Symbol)
 end
 
 @compat function _print(io::IO, state::State, s::Union{Integer, AbstractFloat})
-    if isnan(s) || isinf(s)
+    if isnan(s)
         Base.print(io, "null")
+    elseif isinf(s)
+        if s > 0.0
+            Base.print(io, "Infinity")
+        else
+            Base.print(io, "-Infinity")
+        end
     else
         Base.print(io, s)
     end

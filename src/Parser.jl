@@ -196,6 +196,12 @@ function parse_simple{T<:AbstractString}(ps::ParserState{T})
     elseif c == 'n' && ps.str[ps.s + 3] == 'l' # Looks like "null"
         ps.s += 4
         ret = nothing
+    elseif c == 'I' && ps.str[ps.s + 7] == 'y' # Looks like "Infinity"
+        ps.s += 8
+        ret = Float64(Inf)
+    elseif c == '-' && ps.str[ps.s + 8] == 'y' # Looks like "-Infinity"
+        ps.s += 9
+        ret = -Float64(Inf)
     else
         _error("Unknown simple: " * string(c), ps)
     end
@@ -215,7 +221,7 @@ function parse_value{T<:AbstractString}(ps::ParserState{T}, dictT::Type)
         ret = parse_number(ps)
     elseif ch == '['
         ret = parse_array(ps, dictT)
-    elseif ch == 'f' || ch == 't' || ch == 'n'
+    elseif ch == 'f' || ch == 't' || ch == 'n' || ch == 'I' || ch == '-'
         ret = parse_simple(ps)
     else
         _error("Unknown value", ps)
